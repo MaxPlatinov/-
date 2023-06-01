@@ -1,0 +1,120 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Data;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class Awarding : Form // Окно Регистрация призовых мест
+    {
+        public Awarding()
+        {
+            InitializeComponent(); // Запуск окна
+        }
+
+        private void Back_Click(object sender, EventArgs e) // Переход в меню
+        {
+            this.Hide(); // Спрятать окно
+            Menu next = new Menu(); // Создать окно меню
+            next.Show(); // Переход в окно меню
+        }
+
+        private void Awarding_FormClosed(object sender, FormClosedEventArgs e) // При закрытии окна, закрывать приложение
+        {
+            Application.Exit(); // Закрыть приложение
+        }
+
+        private void Awarding_Load(object sender, EventArgs e) // Загрузка данных для полей Награда и Номер участника
+        {
+            Awarding_Choose.Items.Add(""); // Добавить в поле Награда
+            Awarding_Choose.Items.Add("Золото"); // Добавить в поле Награда
+            Awarding_Choose.Items.Add("Серебро"); // Добавить в поле Награда
+            Awarding_Choose.Items.Add("Бронза"); // Добавить в поле Награда
+
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Participant`", data_Tables.GetConnection());
+            try  // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+
+                while (reader.Read()) // Чтение полученной информации
+                    Room.Items.Add(reader.GetString("Room")); // Запись в поле "Номер участника" номер участника
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+
+        private void All_Int_Line_KeyPress(object sender, KeyPressEventArgs e) // Разрешается писать только цифры
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (!Char.IsDigit(number) && number != 8) // Это буква?
+            { // Да
+                e.Handled = true; // Заблокировать ввод
+            } // Нет
+        }
+
+        private void Awarding_button_Click(object sender, EventArgs e)
+        {
+            if (Room.Text == "") // Поле заполнено?
+            { // Да
+                MessageBox.Show("Введите номер собаки"); // Введите номер собаки
+                return; // Отменить нажатие
+            } // Нет
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+
+            DataTable table = new DataTable(); // Создает таблицу для данных в памяти
+
+            MySqlDataAdapter adapter = new MySqlDataAdapter(); //  Представляет ряд команд данных и соединения с базой данных
+            // Команда для базы данных
+            MySqlCommand cmd = new MySqlCommand("SELECT * FROM `Participant` WHERE `Room` = @Rm", data_Tables.GetConnection());
+
+            cmd.Parameters.Add("@Rm", MySqlDbType.Int32).Value = Room.Text; // Переменная используемая для команды
+            try  // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                adapter.SelectCommand = cmd; // Выполняет команду
+                adapter.Fill(table); // Заполняет таблицу данными полученными из команды
+
+                if (table.Rows.Count == 0) // Если данные в базе?
+                { // Да
+                    MessageBox.Show("С таким номером нет собаки"); // С таким номером нет собаки
+                    return; // Отмена нажатия
+                } // Нет
+                // Команда для базы данных
+                cmd = new MySqlCommand("UPDATE `Participant` SET `Medal` = @Md WHERE `Room` = @Ro", data_Tables.GetConnection());
+
+                cmd.Parameters.Add("@Ro", MySqlDbType.Int32).Value = Room.Text; // Переменная используемая для команды
+                cmd.Parameters.Add("@Md", MySqlDbType.VarChar).Value = Awarding_Choose.Text; // Переменная используемая для команды
+
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                if (cmd.ExecuteNonQuery() == 1) // Команда выполнена?
+                    // Да
+                    MessageBox.Show("Данные сохранены"); // Данные сохранены
+                else // Нет
+                    MessageBox.Show("Данные не сохранены"); // Данные не сохранены
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+
+        private void Awarding_Choose_KeyPress(object sender, KeyPressEventArgs e) // Запрет на ввод всего
+        {
+            e.Handled = true; // Запрет ввода
+        }
+    }
+}
