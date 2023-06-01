@@ -1,0 +1,25 @@
+using MySql.Data.MySqlClient;
+
+namespace Сoursework
+{
+    internal class Data_Tables
+    { // Принимает строку подключения в качестве одного из своих параметров
+        MySqlConnection connection = new MySqlConnection("server=127.0.0.1;port=15100;username=root;password=Zc45ddSzYU0ZELNI;database=Dog_show");
+
+        public void OpenConnection() // Открыть соединение с базой данных
+        {
+            if (connection.State == System.Data.ConnectionState.Closed) // Соединение закрыто?
+                connection.Open(); // Да, Открыть соединение 
+        } // Нет
+        public void CloseConnection() // Закрыть соединение
+        {
+            if (connection.State == System.Data.ConnectionState.Open) // Содинение открыто?
+                connection.Close(); // Да, Закрыть соединение
+        }
+
+        public MySqlConnection GetConnection() // Получить обратную связь
+        {
+            return connection; // Получить соедининие
+        }
+    }
+}
