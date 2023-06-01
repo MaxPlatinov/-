@@ -1,0 +1,64 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class Report_Club : Form // Окно отчет о результатах клуба
+    {
+        public Report_Club()
+        {
+            InitializeComponent();  // Запуск окна
+        }
+
+        private void Report_Club_FormClosed(object sender, FormClosedEventArgs e) // При закрытии окна, закрывать приложение
+        {
+            Application.Exit(); // Закрыть приложение
+        }
+
+        private void Back_Click(object sender, EventArgs e) // Переход в меню
+        {
+            this.Hide(); // Спрятать окно
+            Menu next = new Menu(); // Создать окно меню
+            next.Show(); // Переход в окно меню
+        }
+
+        private void Club_KeyPress(object sender, KeyPressEventArgs e) // Запрещать все писать
+        {
+            e.Handled = true; // Заблокировать ввод
+        }
+
+        private void Know_awarding_club_Click(object sender, EventArgs e) // Нажать на кнопку
+        {
+            if (Club.Text == "") // Поле Клуб пусто? 
+            { // Да
+                MessageBox.Show("Выберите клуб"); // Выберите клуб
+                return; // Отмена нажатия
+            }
+            Club_report Report = new Club_report(Club.Text); // Создать окно отчета клуба
+            Report.Show(); // Показать окно
+        }
+
+        private void Report_Club_Load(object sender, EventArgs e) // Загрузка данных для поля Клуб
+        {
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Club` ", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                MySqlDataReader reader = command.ExecuteReader();  // Прочитать из БД информации из команды
+
+                while (reader.Read()) // Чтение полученной информации
+                    Club.Items.Add(reader.GetString("Club")); // Запись в поле "Клуб" название клуба
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+    }
+}
