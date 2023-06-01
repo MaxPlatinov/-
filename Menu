@@ -1,0 +1,102 @@
+using System;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class Menu : Form // Окно Меню
+    {
+        public Menu()
+        {
+            InitializeComponent(); // Запуск окна
+        }
+
+        private void Add_dog_user_delete_dog_Click(object sender, EventArgs e) // Переход к Регестрации собаки и ее отсранению
+        {
+            this.Hide(); // Скрыть окно
+            Add_dog_user_delete_dog next = new Add_dog_user_delete_dog(); // Создать окно Регестрации собаки и ее отсранению
+            next.Show(); // Показать окно Регестрации собаки и ее отсранению
+        }
+
+        private void Menu_FormClosed(object sender, FormClosedEventArgs e) // При закрытии окна, закрывать приложение
+        {
+            Application.Exit();  // Закрыть приложение
+        }
+
+        private void Registration_breeds_ring_Click(object sender, EventArgs e) // Переход к Регестрации пород на ринге
+        {
+            this.Hide(); // Скрыть окно
+            Registration_breeds_ring next = new Registration_breeds_ring(); // Создать окно Регестрации пород на ринге
+            next.Show(); // Показать окно Регестрации пород на ринге
+        }
+
+        private void Awarding_Click(object sender, EventArgs e) // Переход к Регистрации призовых мест
+        {
+            this.Hide(); // Скрыть окно
+            Awarding next = new Awarding(); // Создать окно Регистрации призовых мест
+            next.Show(); // Показать окно Регистрации призовых мест
+        }
+
+        private void Expert_Click(object sender, EventArgs e) // Переход к Регистрации и отстранения эксперта
+        {
+            this.Hide(); // Скрыть окно
+            Expert next = new Expert(); // Создать окно Регистрации и отстранения эксперта
+            next.Show(); // Показать окно Регистрации и отстранения эксперта
+        }
+
+        private void Change_Expert_Click(object sender, EventArgs e) // Переход к Замене эксперта
+        {
+            this.Hide(); // Скрыть окно
+            Change_Expert next = new Change_Expert(); // Создать окно Замены эксперта
+            next.Show(); // Показать окно Замены эксперта
+        }
+
+        private void Were_user_Click(object sender, EventArgs e) // Переход к Узнать, где участник
+        {
+            this.Hide(); // Скрыть окно
+            Were_user next = new Were_user(); // Создать окно Узнать, где участник
+            next.Show(); // Показать окно Узнать, где участник
+        }
+
+        private void How_Breed_Club_Click(object sender, EventArgs e) // Переход к Узнать породы клуба
+        {
+            this.Hide(); // Скрыть окно
+            How_Breed_Club next = new How_Breed_Club(); // Создать окно Узнать породы клуба
+            next.Show(); // Показать окно Узнать породы клуба
+        }
+
+        private void How_Awarding_Club_Click(object sender, EventArgs e) // Переход к Узнать награды клуба
+        {
+            this.Hide(); // Скрыть окно
+            How_Awarding_Club next = new How_Awarding_Club(); // Создать окно Узнать награды клуба
+            next.Show(); // Показать окно Узнать награды клуба
+        }
+
+        private void How_Expert_Click(object sender, EventArgs e) // Переход к Узнать какие эксперты обслуживают породу
+        {
+            this.Hide(); // Скрыть окно
+            How_Expert next = new How_Expert(); // Создать окно Узнать какие эксперты обслуживают породу
+            next.Show(); // Показать окно Узнать какие эксперты обслуживают породу
+        }
+
+        private void How_user_Click(object sender, EventArgs e) // Переход к Узнать кол-во участников по породе
+        {
+            this.Hide(); // Скрыть окно
+            How_user next = new How_user(); // Создать окно Узнать кол-во участников по породе
+            next.Show(); // Показать окно Узнать кол-во участников по породе
+        }
+
+        private void Dog_Awarding_Click(object sender, EventArgs e) // Переход к Отчету о призовом месте, занятом собакой
+        {
+            this.Hide(); // Скрыть окно
+            Dog_Awarding next = new Dog_Awarding(); // Создать окно Отчету о призовом месте, занятом собакой
+            next.Show(); // Показать окно Отчету о призовом месте, занятом собакой
+        }
+
+        private void Report_Club_Click(object sender, EventArgs e) // Переход к Отчет о результате клуба
+        {
+            this.Hide(); // Скрыть окно
+            Report_Club next = new Report_Club(); // Создать окно Отчет о результате клуба
+            next.Show(); // Показать окно Отчет о результате клуба
+        }
+    }
+}
