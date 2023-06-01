@@ -1,0 +1,50 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class Prize_report : Form // Окно Отчет о призовом месте
+    {
+        public string Rom;
+        public Prize_report(String Data)
+        {
+            InitializeComponent(); // Запуск окна
+            Room.Text += Data; // Прибавить данные к тексту о номере участника
+            Rom = Data; // Присвоение номера участника
+        }
+
+        private void Prize_report_Load(object sender, EventArgs e) // Загрузка данных в поля отчета
+        {
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Participant` WHERE `Room` = @Rm", data_Tables.GetConnection());
+            command.Parameters.Add("@Rm", MySqlDbType.Int32).Value = Rom; // Переменная используемая для команды
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                MySqlDataReader reader = command.ExecuteReader();  // Прочитать из БД информации из команды
+
+                reader.Read();  // Прочитать информацию
+
+                Breed.Text += reader.GetString("Breed"); // Добавить проду к тексту о породе
+                Nickname.Text += reader.GetString("Nickname"); // Добавить кличку к тексту о кличке
+                Club.Text += reader.GetString("Club"); // Добавить название клуба к тексту о клубе
+                if (reader.GetString("Medal") == "") // Медали нет?
+                                                     // Да
+                    Medal.Text += "Не занял"; // Добавить Не занял к тексту о медали
+                else // Нет
+                    Medal.Text += reader.GetString("Medal"); // Добавить название медали к тексту о медали
+                                                             // Добавить ФИО хозяина к тексту о владельце
+                Owner.Text = Owner.Text + reader.GetString("Surname") + " " + reader.GetString("Name") + " " + reader.GetString("Second_Name");
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+    }
+}
