@@ -1,0 +1,156 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class How_Expert : Form // Окно Узнать какие эксперты обслуживают породу
+    {
+        public How_Expert()
+        {
+            InitializeComponent(); // Запуск окна
+        }
+
+        private void How_Expert_FormClosed(object sender, FormClosedEventArgs e) // При закрытии окна, закрывать приложение
+        {
+            Application.Exit(); // Закрыть приложения
+        }
+
+        private void How_Expert_Load(object sender, EventArgs e) // Загрузка таблицы и данных для поля Породы
+        {
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Ring` ", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+
+                while (reader.Read()) // Чтение полученной информации
+                    Breed.Items.Add(reader.GetString("Breed")); // Запись в поле "Порода" породу собаки
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+
+            var column1 = new DataGridViewColumn(); // Создать колонку
+            column1.HeaderText = "Фамилия"; // Заголовок колонки
+            column1.Width = 150; // Ширина колонки
+            column1.Name = "Фамилия"; // Имя колонки
+            column1.Frozen = true; // Нельзя двигать колонку
+            column1.CellTemplate = new DataGridViewTextBoxCell(); // Шаблон DataGridViewTextBoxCell
+
+            var column2 = new DataGridViewColumn(); // Создать колонку
+            column2.HeaderText = "Имя"; // Заголовок колонки
+            column2.Width = 150; // Ширина колонки
+            column2.Name = "Имя"; // Имя колонки
+            column2.Frozen = true; // Нельзя двигать колонку
+            column2.CellTemplate = new DataGridViewTextBoxCell(); // Шаблон DataGridViewTextBoxCell
+
+            var column3 = new DataGridViewColumn(); // Создать колонку
+            column3.HeaderText = "Отчество"; // Заголовок колонки
+            column3.Width = 150; // Ширина колонки
+            column3.Name = "Отчество"; // Имя колонки
+            column3.Frozen = true; // Нельзя двигать колонку
+            column3.CellTemplate = new DataGridViewTextBoxCell(); // Шаблон DataGridViewTextBoxCell
+
+            var column4 = new DataGridViewColumn(); // Создать колонку
+            column4.HeaderText = "Серия паспорта"; // Заголовок колонки
+            column4.Width = 150; // Ширина колонки
+            column4.Name = "Серия паспорта"; // Имя колонки
+            column4.Frozen = true; // Нельзя двигать колонку
+            column4.CellTemplate = new DataGridViewTextBoxCell(); // Шаблон DataGridViewTextBoxCell
+
+            var column5 = new DataGridViewColumn(); // Создать колонку
+            column5.HeaderText = "Номер паспорта"; // Заголовок колонки
+            column5.Width = 150; // Ширина колонки
+            column5.Name = "Номер паспорат"; // Имя колонки
+            column5.Frozen = true; // Нельзя двигать колонку
+            column5.CellTemplate = new DataGridViewTextBoxCell(); // Шаблон DataGridViewTextBoxCell
+
+            var column6 = new DataGridViewColumn(); // Создать колонку
+            column6.HeaderText = "Клуб"; // Заголовок колонки
+            column6.Width = 150; // Ширина колонки
+            column6.Name = "Клуб"; // Имя колонки
+            column6.Frozen = true; // Нельзя двигать колонку
+            column6.CellTemplate = new DataGridViewTextBoxCell(); // Шаблон DataGridViewTextBoxCell
+
+            Expert.Columns.Add(column1); // Добавить колонку в Expert
+            Expert.Columns.Add(column2); // Добавить колонку в Expert
+            Expert.Columns.Add(column3); // Добавить колонку в Expert
+            Expert.Columns.Add(column4); // Добавить колонку в Expert
+            Expert.Columns.Add(column5); // Добавить колонку в Expert
+            Expert.Columns.Add(column6); // Добавить колонку в Expert
+            Expert.AllowUserToAddRows = false; // Нельзя добавлять строки
+            Expert.ReadOnly = true; // Только чтение
+        }
+
+        private void Breed_KeyPress(object sender, KeyPressEventArgs e) // Запрет на ввод всего
+        {
+            e.Handled = true; // Запрет ввода
+        }
+
+        private void Back_Click(object sender, EventArgs e) // Переход в меню
+        {
+            this.Hide(); // Спрятать окно
+            Menu next = new Menu(); // Создать окно меню
+            next.Show(); // Переход в окно меню
+        }
+
+        private void Know_awarding_club_Click(object sender, EventArgs e) // Нажать на кнопку
+        {
+            if (Breed.Text == "") // Поле Порода пусто?
+            { // Да
+                MessageBox.Show("Выберите пароду"); // Выберите пароду
+                return; // Отмена нажатия
+            } // Нет
+            Expert.Rows.Clear(); // Очистить строки
+
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            string Ring; // Ринг
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Ring` WHERE `Breed` = @Bd", data_Tables.GetConnection());
+            command.Parameters.Add("@Bd", MySqlDbType.VarChar).Value = Breed.Text; // Переменная используемая для команды
+            try // Ловит ошибку с отсутвием участника в БД
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+                reader.Read(); // Чтение полученной информации
+                Ring = reader.GetString("Ring"); // Присваевается переменной ринг
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+                // Команда для базы данных
+                command = new MySqlCommand("SELECT * FROM `Expert`", data_Tables.GetConnection());
+
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+                try // Ловит ошибку отсутвия эксперта в БД
+                {
+                    while (reader.Read()) // Чтение полученной информации
+                                          // "Ринг" равен Ринг из БД
+                        if (Ring == reader.GetString("Ring"))
+                            // Да
+                            // Добавить данные эксперта в таблица
+                            Expert.Rows.Add(reader.GetString("Surname"), reader.GetString("Name"), reader.GetString("Second_Name"), reader.GetString("Syria"), reader.GetString("Number"), reader.GetString("Club"));
+                    // Нет
+                }
+                catch // Поймал ошибку отсутвия эксперта в БД 
+                {
+                    data_Tables.CloseConnection(); // Закрыть соединение с БД
+                    MessageBox.Show("Эксперты еще не зарегестрированы"); // Эксперты еще не зарегестрированы
+                    return; // Отмена нажатия
+                }
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+    }
+}
