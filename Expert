@@ -1,0 +1,429 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class Expert : Form // Окно Регистрации и отстранения эксперта
+    {
+        public Expert()
+        {
+            InitializeComponent(); // Запуск окна
+        }
+
+        private void Expert_FormClosed(object sender, FormClosedEventArgs e) // При закрытии окна, закрывать приложение
+        {
+            Application.Exit(); // Закрыть приложение
+        }
+
+        private void Back_Click(object sender, EventArgs e) // Переход в меню
+        {
+            this.Hide(); // Спрятать окно
+            Menu next = new Menu(); // Создать окно меню
+            next.Show(); // Переход в окно меню
+        }
+
+        private void Expert_Load(object sender, EventArgs e) // Загрузка данных в поле Ринг и Клуб
+        {
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Ring` ", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+                bool Check; // Проверка
+                while (reader.Read()) // Чтение полученной информации
+                {
+                    Check = false; // Проверка непройдена
+                    for (int i = 0; i < Ring.Items.Count; i++) // Проверка соответсвия рингов
+                                                               // "Ринг" равно Ринг из БД или Ринг из БД равен ничему?
+                        if (Convert.ToString(Ring.Items[i]) == reader.GetString("Ring") || reader.GetString("Ring") == "")
+                            // Да
+                            Check = true; // Проверка пройдена
+                                          // Нет
+                    if (Check) // Проверка пройдена?
+                               // Да
+                        continue;
+                    // Нет
+                    Ring.Items.Add(reader.GetString("Ring")); // Добавить данные в поле "Ринг"
+                }
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+                // Команда для базы данных
+                command = new MySqlCommand("SELECT * FROM `Club` ", data_Tables.GetConnection());
+
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+
+                while (reader.Read()) // Чтение полученной информации
+                    Club.Items.Add(reader.GetString("Club")); // Добавить данные в поле "Клуб"
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+
+        private void Expert_Surname_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Expert_Surname.Text == "Введите Фамилию эксперта" && Expert_Surname.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Expert_Surname.Text = ""; // Стирает подсказку
+                Expert_Surname.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+        private void Expert_Surname_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Expert_Surname.Text == "") // Поле пусто?
+            { // Да
+                Expert_Surname.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Expert_Surname.Text = "Введите Фамилию эксперта"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Expert_Name_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Expert_Name.Text == "Введите Имя эксперта" && Expert_Name.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Expert_Name.Text = ""; // Стирает подсказку
+                Expert_Name.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Expert_Name_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Expert_Name.Text == "") // Поле пусто?
+            { // Да
+                Expert_Name.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Expert_Name.Text = "Введите Имя эксперта"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Expert_Second_Name_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Expert_Second_Name.Text == "Введите Отчество эксперта" && Expert_Second_Name.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Expert_Second_Name.Text = ""; // Стирает подсказку
+                Expert_Second_Name.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Expert_Second_Name_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Expert_Second_Name.Text == "") // Поле пусто?
+            { // Да
+                Expert_Second_Name.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Expert_Second_Name.Text = "Введите Отчество эксперта"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Seriy_Expert_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Seriy_Expert.Text == "Введите Серию паспорта" && Seriy_Expert.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Seriy_Expert.Text = ""; // Стирает подсказку
+                Seriy_Expert.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Seriy_Expert_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Seriy_Expert.Text == "") // Поле пусто?
+            { // Да
+                Seriy_Expert.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Seriy_Expert.Text = "Введите Серию паспорта"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Number_Expert_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Number_Expert.Text == "Введите Номер паспорта" && Number_Expert.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Number_Expert.Text = ""; // Стирает подсказку
+                Number_Expert.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Number_Expert_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Number_Expert.Text == "") // Поле пусто?
+            { // Да
+                Number_Expert.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Number_Expert.Text = "Введите Номер паспорта"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Club_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Club.Text == "Введите название клуба" && Club.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Club.Text = ""; // Стирает подсказку
+                Club.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Club_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Club.Text == "") // Поле пусто?
+            { // Да
+                Club.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Club.Text = "Введите название клуба"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Ring_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Ring.Text == "Введите номер ринга" && Ring.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Ring.Text = ""; // Стирает подсказку
+                Ring.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Ring_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Ring.Text == "") // Поле пусто?
+            { // Да
+                Ring.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Ring.Text = "Введите номер ринга"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Non_KeyPress(object sender, KeyPressEventArgs e) // Запрет на ввод всего
+        {
+            e.Handled = true; // Запрет ввода
+        }
+
+        private void Registration_Expert_Click(object sender, EventArgs e) // Нажать на кнопку регистрации
+        {
+            // Список содержания всех полей
+            List<string> Say = new List<string>() { Expert_Surname.Text, Expert_Name.Text, Expert_Second_Name.Text, Seriy_Expert.Text, Number_Expert.Text, Club.Text, Ring.Text };
+            for (int i = 0; i < Say.LongCount(); i++) // Перебор полей
+                if (!Check_Empty(Say[i])) // Проверка не пройдена?
+                    // Да
+                    return; // Отмена нажатия
+            // Нет
+            // Серия паспорат состоит из не 4 символов?
+            if (Seriy_Expert.Text.LongCount() != 4)
+            { // Да
+                MessageBox.Show("Не верно введена Серия паспорта"); // Не верно введена Серия паспорта
+                return; // Отмена нажатия
+            } // Нет
+            // Номер паспорат состоит из не 6 символов?
+            if (Number_Expert.Text.LongCount() != 6)
+            { // Да
+                MessageBox.Show("Не верно введен Номер паспорта"); // Не верно введен Номер паспорта
+                return; // Отмена нажатия
+            } // Нет
+
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+
+            DataTable table = new DataTable(); // Создает таблицу для данных в памяти
+
+            MySqlDataAdapter adapter = new MySqlDataAdapter(); //  Представляет ряд команд данных и соединения с базой данных
+            // Команда для базы данных
+            MySqlCommand cmd = new MySqlCommand("SELECT * FROM `Expert` WHERE `Syria` = @Sr AND `Number` = @Nbr", data_Tables.GetConnection());
+
+            cmd.Parameters.Add("@Sr", MySqlDbType.Int32).Value = Seriy_Expert.Text; // Переменная используемая для команды
+            cmd.Parameters.Add("@Nbr", MySqlDbType.Int32).Value = Number_Expert.Text; // Переменная используемая для команды
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                adapter.SelectCommand = cmd; // Выполняет команду
+                adapter.Fill(table); // Заполняет таблицу данными полученными из команды
+
+                if (table.Rows.Count > 0) // Есть ли данные в базе?
+                { // Да
+                    MessageBox.Show("Уже существует эксперт с такими паспортными данными"); // Уже существует эксперт с такими паспортными данными
+                    return; // Отмена нажатия
+                } // Нет
+                  // Команда для базы данных
+                MySqlCommand command = new MySqlCommand("INSERT INTO `Expert` (`Surname`, `Name`, `Second_Name`, `Syria`, `Number`, `Club`, `Ring`) VALUES (@Sn, @N, @Sd_N, @Sri, @Num, @Cl, @Rg)", data_Tables.GetConnection());
+                command.Parameters.Add("@Sn", MySqlDbType.VarChar).Value = Expert_Surname.Text; // Переменная используемая для команды
+                command.Parameters.Add("@N", MySqlDbType.VarChar).Value = Expert_Name.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Sd_N", MySqlDbType.VarChar).Value = Expert_Second_Name.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Sri", MySqlDbType.Int32).Value = Seriy_Expert.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Num", MySqlDbType.Int32).Value = Number_Expert.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Cl", MySqlDbType.VarChar).Value = Club.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Rg", MySqlDbType.Int32).Value = Ring.Text; // Переменная используемая для команды
+
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                if (command.ExecuteNonQuery() == 1) // Команда выполнена?
+                                                    // Да
+                    MessageBox.Show("Эксперт добавлен"); // Эксперт добавлен
+                else // Нет
+                    MessageBox.Show("Эксперт не добавлен"); // Эксперт не добавлен
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+
+        public bool Check_Empty(string Text) // Подпрограмма проверки полей
+        {
+            // Список с содержанием всех полей
+            List<string> Say = new List<string>() { "Введите Фамилию эксперта", "Введите Имя эксперта", "Введите Отчество эксперта", "Введите Серию паспорта", "Введите Номер паспорта", "Введите название клуба", "Введите номер ринга" };
+            for (int i = 0; i < Say.LongCount(); i++) // Перебор полей
+                if (Say[i] == Text) // Поле равно его подсказке?
+                { // Да
+                    MessageBox.Show(Say[i]); // Подсказка поля
+                    return false; // Возврат отрицания
+                } // Нет
+            return true; // Возврат положительный
+        }
+
+        private void Seriy_Expert_KeyPress(object sender, KeyPressEventArgs e) // Запрет на буквы и ограничение до 4 символов
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (Seriy_Expert.Text.Length > 3 && number != 8) // Символа 4?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+            if (!Char.IsDigit(number) && number != 8) // Буква?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+        }
+
+        private void Number_Expert_KeyPress(object sender, KeyPressEventArgs e) // Запрет на буквы и ограничение до 6 символов
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (Number_Expert.Text.Length > 5 && number != 8) // Символа 6?
+                                                              // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+            if (!Char.IsDigit(number) && number != 8) // Буква?
+                                                      // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+        }
+
+        private void All_Line_KeyPress(object sender, KeyPressEventArgs e) // Запрет на цифры
+        {
+            string Symbol = e.KeyChar.ToString(); // Присваевает пременныую string нажатой клавишы
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (!Regex.Match(Symbol, @"[а-яА-Я]|[a-zA-Z]").Success && number != 8 && number != 32) // Цифра?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+        }
+
+        private void Seriy_Out_Expert_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Seriy_Out_Expert.Text == "Введите Серию паспорта" && Seriy_Out_Expert.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Seriy_Out_Expert.Text = ""; // Стирает подсказку
+                Seriy_Out_Expert.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Seriy_Out_Expert_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Seriy_Out_Expert.Text == "") // Поле пусто?
+            { // Да
+                Seriy_Out_Expert.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Seriy_Out_Expert.Text = "Введите Серию паспорта"; // Вводит подсказку
+            } // Нет
+        }
+        private void Seriy_Out_Expert_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (Seriy_Out_Expert.Text.Length > 3 && number != 8) // Символа 4?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+            if (!Char.IsDigit(number) && number != 8) // Буква?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+        }
+
+        private void Number_Out_Expert_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Number_Out_Expert.Text == "Введите Номер паспорта" && Number_Out_Expert.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Number_Out_Expert.Text = ""; // Стирает подсказку
+                Number_Out_Expert.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Number_Out_Expert_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Number_Out_Expert.Text == "") // Поле пусто?
+            { // Да
+                Number_Out_Expert.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Number_Out_Expert.Text = "Введите Номер паспорта"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Number_Out_Expert_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (Number_Out_Expert.Text.Length > 5 && number != 8) // Символа 6?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+            if (!Char.IsDigit(number) && number != 8) // Буква?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+        }
+
+        private void Out_Expert_Click(object sender, EventArgs e) // Нажать на кнопку отстранения
+        {
+            // Список со значениями полей
+            List<string> Say = new List<string>() { Seriy_Out_Expert.Text, Number_Out_Expert.Text };
+            for (int i = 0; i < Say.LongCount(); i++) // Перебор полей
+                if (!Check_Empty(Say[i])) // Проверка не пройдена?
+                    // Да
+                    return; // Отмена нажатия
+            // Нет
+            // Серия паспорат состоит из не 4 символов?
+            if (Seriy_Out_Expert.Text.LongCount() != 4)
+            { // Да
+                MessageBox.Show("Не верно введена Серия паспорта"); // Не верно введена Серия паспорта
+                return; // Отмена нажатия
+            } // Нет
+            // Номер паспорат состоит из не 6 символов?
+            if (Number_Out_Expert.Text.LongCount() != 6)
+            { // Да
+                MessageBox.Show("Не верно введен Номер паспорта"); // Не верно введен Номер паспорта
+                return; // Отмена нажатия
+            } // Нет
+
+            Data_Tables data_Tables = new Data_Tables();  // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand cmd = new MySqlCommand("DELETE FROM `Expert` WHERE `Syria` = @Sr AND `Number` = @Nbr", data_Tables.GetConnection());
+
+            cmd.Parameters.Add("@Sr", MySqlDbType.Int32).Value = Seriy_Out_Expert.Text; // Переменная используемая для команды
+            cmd.Parameters.Add("@Nbr", MySqlDbType.Int32).Value = Number_Out_Expert.Text; // Переменная используемая для команды
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                if (cmd.ExecuteNonQuery() == 1) // Команда выполнена?
+                                                // Да
+                    MessageBox.Show("Эксперт отстранен"); // Эксперт отстранен
+                else // Нет
+                    MessageBox.Show("Не найден указанный эксперт"); // Не найден указанный эксперт
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+    }
+}
