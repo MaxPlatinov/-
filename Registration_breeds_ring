@@ -1,0 +1,268 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class Registration_breeds_ring : Form // Окно Регистрация пород на ринге
+    {
+        public Registration_breeds_ring()
+        {
+            InitializeComponent(); // Запуск окна
+        }
+
+        private void Registration_breeds_ring_FormClosed(object sender, FormClosedEventArgs e) // При закрытии окна, закрывать приложение
+        {
+            Application.Exit(); // Закрыть приложение
+        }
+
+        private void Registration_breeds_ring_Load(object sender, EventArgs e) // Загрузка данных для поля Порода
+        {
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Ring` ", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+
+                while (reader.Read()) // Чтение полученной информации
+                    Breed.Items.Add(reader.GetString("Breed")); // Запись в поле "Порода" породу собаки
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+
+        private void Back_Click(object sender, EventArgs e) // Переход в меню
+        {
+            this.Hide(); // Спрятать окно
+            Menu next = new Menu(); // Создать окно меню
+            next.Show(); // Переход в окно меню
+        }
+
+        private void All_Int_Line_KeyPress(object sender, KeyPressEventArgs e) // Разрешается писать только цифры
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (!Char.IsDigit(number) && number != 8) // Это буква?
+            { // Да
+                e.Handled = true; // Заблокировать ввод
+            } // Нет
+        }
+
+        private void Breed_KeyPress(object sender, KeyPressEventArgs e) // Запретить любой ввод
+        {
+            e.Handled = true;// Запретить ввод
+        }
+
+        private void Registration_button_Click(object sender, EventArgs e) // Нажать на кнопку
+        {
+            if (Breed.Text == "") // Поле Порода пусто?
+            { // Да
+                MessageBox.Show("Выберите пароду"); // Выберите пароду
+                return; // Отмена нажатия
+            } // Нет
+            if (Ring.Text == "" || Ring.Text.IndexOf('0') == 0) // После Ринг путо или начинается с 0?
+            { // Да
+                MessageBox.Show("Укажите верный ринг"); // Укажите верный ринг
+                return; // Отмена нажатия
+            } // Нет
+
+            if (Begin_Time.Text.Length != 5) // Поле "Время начала выступления" не равно колмичеству сиволов 5? 
+            { // Да
+                MessageBox.Show("Введите время начала выступления"); // Введите время начала выступления
+                return; // Отмена нажатия
+            } // Нет
+
+            if (End_Time.Text.Length != 5) // Поле "Время конца выступления" не равно колмичеству сиволов 5? 
+            { // Да
+                MessageBox.Show("Введите время конца выступления"); // Введите время конца выступления
+                return; // Отмена нажатия
+            } // Нет
+            String Begin_T, End_T, Begin_T_Other, End_T_Other; // Переменные времени char
+            Begin_T = Begin_Time.Text; // Переменная присваевает начало времени
+            End_T = End_Time.Text; // Переменная присваевает конец времени
+            Begin_T = Begin_T.Remove(2, 1); // Удаялет символ ":"
+            End_T = End_T.Remove(2, 1); // Удаялет символ ":"
+
+            int Begin, End, Begin_Other, End_Other; // Переменные времени int
+            Begin = Convert.ToInt32(Begin_T); // Переменная присваевает значение начало времени
+            End = Convert.ToInt32(End_T); // Переменная присваевает значение конец времени
+            if (Begin >= End) // Начало времени больше конца времени?
+            { // Да
+                // Введите корректное время начала и конца выступления
+                MessageBox.Show("Введите корректное время начала и конца выступления");
+                return; // Отмена нажатия
+            } // Нет
+
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Ring` ", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection();  // Открыть соединение с БД
+
+                MySqlDataReader reader = command.ExecuteReader();  // Прочитать из БД информации из команды
+
+                while (reader.Read())  // Чтение полученной информации
+                {
+                    Begin_T_Other = reader.GetString("Begin_time"); // Переменная присваевает начало времени в БД
+                    End_T_Other = reader.GetString("End_time");  // Переменная присваевает конец времени в БД
+                    // Время в БД не указано или поле "Порода" равна Породе в БД или поел "Ринг" не равен Ринг в БД?
+                    if (Begin_T_Other == "" || Breed.Text == reader.GetString("Breed") || Ring.Text != reader.GetString("Ring"))
+                        // Да
+                        continue; // Дальше
+                    // Нет
+                    Begin_T_Other = Begin_T_Other.Remove(2, 1); // Удаялет символ ":"
+                    End_T_Other = End_T_Other.Remove(2, 1); // Удаялет символ ":"
+
+                    Begin_Other = Convert.ToInt32(Begin_T_Other); // Переменная присваевает значение начало времени из БД
+                    End_Other = Convert.ToInt32(End_T_Other); // Переменная присваевает значение конец времени из БД
+                    // Время в БД и указанное пресекаются?
+                    if (!(End < Begin_Other || Begin > End_Other))
+                    {// Да
+                        // Данный промежуток времени занят породой *. Выберите другой.
+                        MessageBox.Show($"Данный промежуток времени занят породой {reader.GetString("Breed")}. Выберите другой.");
+                        data_Tables.CloseConnection(); // Закрыть соединение с БД
+                        return; // Отмена нажатия
+                    } // Нет
+
+                }
+                data_Tables.CloseConnection();  // Закрыть соединение с БД
+
+                // Команда для базы данных
+                command = new MySqlCommand("UPDATE `Ring` SET `Breed` = @Brd, `Ring` = @Rg, `Begin_time` = @Bt, `End_time` = @Et WHERE `Breed` = @Brd", data_Tables.GetConnection());
+                command.Parameters.Add("@Brd", MySqlDbType.VarChar).Value = Breed.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Rg", MySqlDbType.VarChar).Value = Ring.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Bt", MySqlDbType.VarChar).Value = Begin_Time.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Et", MySqlDbType.VarChar).Value = End_Time.Text; // Переменная используемая для команды
+                data_Tables.OpenConnection();  // Открыть соединение с БД
+                // Команда выполнена?
+                if (command.ExecuteNonQuery() == 1)
+                    // Да
+                    MessageBox.Show("Данные сохранены"); // Данные сохранены
+                else // Нет
+                    MessageBox.Show("Данные не сохранены"); // Данные не сохранены
+
+                data_Tables.CloseConnection();  // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+
+        private void Begin_Time_KeyPress(object sender, KeyPressEventArgs e) // Ограничение введения начала времени
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            // Превый символ не 0 - 2?
+            if (!(number > 47 && number < 51) && number != 8 && Begin_Time.Text.Length == 0)
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+            // Первый символ не 0 или 1, а второй не 0 - 9? 
+            if (!(number > 47 && number < 58) && number != 8 && Begin_Time.Text.Length == 1 && (Begin_Time.Text == "0" || Begin_Time.Text == "1"))
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+            // Первый символ не 2, а второй не 0 - 3?
+            if (!(number > 47 && number < 52) && number != 8 && Begin_Time.Text.Length == 1 && Begin_Time.Text == "2")
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+            // Символов 2?
+            if (Begin_Time.Text.Length == 2 && number != 8)
+                // Да
+                Begin_Time.Text += ":"; // Добавит ":"
+            // Нет
+            // Символов 3?
+            if (Begin_Time.Text.Length == 3 && number != 8)
+                // Да
+                Begin_Time.SelectionStart = 3; // Перенести на курсор на 3 символ
+            // Нет
+            // Четвретый символ не 0 - 5?
+            if (!(number > 47 && number < 54) && number != 8 && Begin_Time.Text.Length == 3)
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+            // Пятый символ не 0 - 9?
+            if (!(number > 47 && number < 58) && number != 8 && Begin_Time.Text.Length == 4)
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+            // Символов 5?
+            if (Begin_Time.Text.Length == 5 && number != 8)
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+        }
+
+        private void Begin_Time_KeyDown(object sender, KeyEventArgs e) // Запрет на ввод стрелок
+        {
+            // Введена стрелка?
+            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
+            { // Да
+                e.Handled = true; // Запрет ввода
+            } // Нет
+        }
+
+        private void End_Time_KeyPress(object sender, KeyPressEventArgs e) // Ограничение введения конца времени
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            // Превый символ не 0 - 2?
+            if (!(number > 47 && number < 51) && number != 8 && End_Time.Text.Length == 0)
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+            // Первый символ не 0 или 1, а второй не 0 - 9? 
+            if (!(number > 47 && number < 58) && number != 8 && End_Time.Text.Length == 1 && (End_Time.Text == "0" || End_Time.Text == "1"))
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+            // Первый символ не 2, а второй не 0 - 3?
+            if (!(number > 47 && number < 52) && number != 8 && End_Time.Text.Length == 1 && End_Time.Text == "2")
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+            // Символов 2?
+            if (End_Time.Text.Length == 2 && number != 8)
+                // Да
+                End_Time.Text += ":"; // Добавит ":"
+            // Нет
+            // Символов 3?
+            if (End_Time.Text.Length == 3 && number != 8)
+                // Да
+                End_Time.SelectionStart = 3; // Перенести на курсор на 3 символ
+            // Нет
+            // Четвретый символ не 0 - 5?
+            if (!(number > 47 && number < 54) && number != 8 && End_Time.Text.Length == 3)
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+            // Пятый символ не 0 - 9?
+            if (!(number > 47 && number < 58) && number != 8 && Begin_Time.Text.Length == 4)
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+            // Символов 5?
+            if (End_Time.Text.Length == 5 && number != 8)
+                // Да
+                e.Handled = true; // Запрет ввода
+            // Нет
+        }
+
+        private void Begin_Time_Click(object sender, EventArgs e) // Расположение курсора в поле "Начало выступления"
+        {
+            Begin_Time.SelectionStart = Begin_Time.Text.Length; // Курсор переместить на последний символ
+        }
+
+        private void End_Time_Click(object sender, EventArgs e) // Расположение курсора в поле "Конец выступления"
+        {
+            End_Time.SelectionStart = End_Time.Text.Length; // Курсор переместить на последний символ
+        }
+    }
+}
