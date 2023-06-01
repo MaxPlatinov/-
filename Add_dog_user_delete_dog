@@ -1,0 +1,536 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class Add_dog_user_delete_dog : Form // Окно Регистрации и отстранения собаки
+    {
+        public Add_dog_user_delete_dog()
+        {
+            InitializeComponent(); // Запуск окна
+        }
+
+        private void User_Surname_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (User_Surname.Text == "Введите Фамилию участника" && User_Surname.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.User_Surname.Text = ""; // Стирает подсказку
+                User_Surname.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+        private void User_Surname_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (User_Surname.Text == "") // Поле пусто?
+            { // Да
+                User_Surname.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.User_Surname.Text = "Введите Фамилию участника"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void User_Name_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (User_Name.Text == "Введите Имя участника" && User_Name.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.User_Name.Text = ""; // Стирает подсказку
+                User_Name.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void User_Name_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (User_Name.Text == "") // Поле пусто?
+            { // Да
+                User_Name.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.User_Name.Text = "Введите Имя участника"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void User_Second_Name_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (User_Second_Name.Text == "Введите Отчество участника" && User_Second_Name.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.User_Second_Name.Text = ""; // Стирает подсказку
+                User_Second_Name.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void User_Second_Name_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (User_Second_Name.Text == "") // Поле пусто?
+            { // Да
+                User_Second_Name.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.User_Second_Name.Text = "Введите Отчество участника"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Seriy_user_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Seriy_user.Text == "Введите Серию паспорта" && Seriy_user.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Seriy_user.Text = ""; // Стирает подсказку
+                Seriy_user.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Seriy_user_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Seriy_user.Text == "") // Поле пусто?
+            { // Да
+                Seriy_user.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Seriy_user.Text = "Введите Серию паспорта"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Number_user_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Number_user.Text == "Введите Номер паспорта" && Number_user.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Number_user.Text = ""; // Стирает подсказку
+                Number_user.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Number_user_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Number_user.Text == "") // Поле пусто?
+            { // Да
+                Number_user.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Number_user.Text = "Введите Номер паспорта"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Nickname_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Nickname.Text == "Введите кличку собаки" && Nickname.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Nickname.Text = ""; // Стирает подсказку
+                Nickname.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Nickname_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Nickname.Text == "") // Поле пусто?
+            { // Да
+                Nickname.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Nickname.Text = "Введите кличку собаки"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Age_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Age.Text == "Введите возраст собаки" && Age.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Age.Text = ""; // Стирает подсказку
+                Age.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Age_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Age.Text == "") // Поле пусто?
+            { // Да
+                Age.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Age.Text = "Введите возраст собаки"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Club_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Club.Text == "Введите название клуба" && Club.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Club.Text = ""; // Стирает подсказку
+                Club.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Club_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Club.Text == "") // Поле пусто?
+            { // Да
+                Club.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Club.Text = "Введите название клуба"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Nickname_Dad_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Nickname_Dad.Text == "Введите кличку отца собаки" && Nickname_Dad.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Nickname_Dad.Text = ""; // Стирает подсказку
+                Nickname_Dad.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Nickname_Dad_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Nickname_Dad.Text == "") // Поле пусто?
+            { // Да
+                Nickname_Dad.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Nickname_Dad.Text = "Введите кличку отца собаки"; // Вводит подсказку
+            } // Нет
+        }
+        private void Nickname_Mum_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Nickname_Mum.Text == "Введите кличку мамы собаки" && Nickname_Mum.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Nickname_Mum.Text = ""; // Стирает подсказку
+                Nickname_Mum.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Nickname_Mum_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Nickname_Mum.Text == "") // Поле пусто?
+            { // Да
+                Nickname_Mum.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Nickname_Mum.Text = "Введите кличку мамы собаки"; // Вводит подсказку
+            } // Нет
+        }
+        private void NFtSB_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (NFtSB.Text == "Введите номер родословной" && NFtSB.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.NFtSB.Text = ""; // Стирает подсказку
+                NFtSB.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void NFtSB_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (NFtSB.Text == "") // Поле пусто?
+            { // Да
+                NFtSB.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.NFtSB.Text = "Введите номер родословной"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Room_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Room.Text == "Введите номер собаки" && Room.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Room.Text = ""; // Стирает подсказку
+                Room.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Room_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Room.Text == "") // Поле пусто?
+            { // Да
+                Room.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Room.Text = "Введите номер собаки"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Breed_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Breed.Text == "Введите породу собаки" && Breed.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Breed.Text = ""; // Стирает подсказку
+                Breed.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Breed_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Breed.Text == "") // Поле пусто?
+            { // Да
+                Breed.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Breed.Text = "Введите породу собаки"; // Вводит подсказку
+            } // Нет
+        }
+        private void Room_Out_Enter(object sender, EventArgs e) // При нажатии на поле уберает подсказку
+        {
+            if (Room_Out.Text == "Введите номер собаки" && Room_Out.ForeColor == Color.Silver) // Есть подсказка?
+            { // Да
+                this.Room_Out.Text = ""; // Стирает подсказку
+                Room_Out.ForeColor = Color.Black; // Меняет цвет на черный
+            } // Нет
+        }
+
+        private void Room_Out_Leave(object sender, EventArgs e) // При покидании поля, появляется подсказка
+        {
+            if (Room_Out.Text == "") // Поле пусто?
+            { // Да
+                Room_Out.ForeColor = Color.Silver; // Меняет цвет на серебряный
+                this.Room_Out.Text = "Введите номер собаки"; // Вводит подсказку
+            } // Нет
+        }
+
+        private void Registration_User_Click(object sender, EventArgs e) // Нажать кнопку регистрации
+        {
+            // Список содержания всех полей
+            List<string> Say = new List<string>() { User_Surname.Text, User_Name.Text, User_Second_Name.Text, Seriy_user.Text, Number_user.Text, Nickname.Text, Age.Text, Breed.Text, Club.Text, Nickname_Dad.Text, Nickname_Mum.Text, NFtSB.Text, Room.Text };
+            for (int i = 0; i < Say.LongCount(); i++) // Перебор полей
+                if (!Check_Empty(Say[i])) // Проверка не пройдена?
+                    // Да
+                    return; // Отмена нажатия
+            // Нет
+            // Серия паспорат состоит из не 4 символов?
+            if (Seriy_user.Text.LongCount() != 4)
+            { // Да
+                MessageBox.Show("Не верно введена Серия паспорта"); // Не верно введена Серия паспорта
+                return; // Отмена нажатия
+            } // Нет
+            // Номер паспорат состоит из не 6 символов?
+            if (Number_user.Text.LongCount() != 6)
+            { // Да
+                MessageBox.Show("Не верно введен Номер паспорта"); // Не верно введен Номер паспорта
+                return; // Отмена нажатия
+            } // Нет
+
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+
+            DataTable table = new DataTable(); // Создает таблицу для данных в памяти
+
+            MySqlDataAdapter adapter = new MySqlDataAdapter(); //  Представляет ряд команд данных и соединения с базой данных
+            // Команда для базы данных
+            MySqlCommand cmd = new MySqlCommand("SELECT * FROM `Participant` WHERE `Room` = @Rm", data_Tables.GetConnection());
+
+            cmd.Parameters.Add("@Rm", MySqlDbType.Int32).Value = Room.Text; // Переменная используемая для команды
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                adapter.SelectCommand = cmd; // Выполняет команду
+                adapter.Fill(table); // Заполняет таблицу данными полученными из команды
+
+                if (table.Rows.Count > 0) // Если данные в базе?
+                { // Да
+                    MessageBox.Show("Уже существует собака с таким номером"); // Уже существует собака с таким номером
+                    return; // Отмена нажатия
+                } // Нет
+                // Команда для базы данных
+                cmd = new MySqlCommand("SELECT * FROM `Participant` WHERE `Syria` = @Sr AND `Number` = @Nbr", data_Tables.GetConnection());
+
+                cmd.Parameters.Add("@Sr", MySqlDbType.Int32).Value = Seriy_user.Text; // Переменная используемая для команды
+                cmd.Parameters.Add("@Nbr", MySqlDbType.Int32).Value = Number_user.Text; // Переменная используемая для команды
+
+                adapter.SelectCommand = cmd; // Выполняет команду
+                adapter.Fill(table); // Заполняет таблицу данными полученными из команды
+
+                if (table.Rows.Count > 0) // Если данные в базе?
+                { // Да
+                    MessageBox.Show("Уже существует участник с такими паспортными данными"); // Уже существует участник с такими паспортными данными
+                    return; // Отмена нажатия
+                } // Нет
+                  // Команда для базы данных
+                cmd = new MySqlCommand("SELECT * FROM `Club` WHERE `Club` = @Cb;", data_Tables.GetConnection());
+
+                cmd.Parameters.Add("@Cb", MySqlDbType.VarChar).Value = Club.Text; // Переменная используемая для команды
+
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                MySqlDataReader reader = cmd.ExecuteReader(); // Прочитать из БД информации из команды
+                reader.Read(); // Чтение полученной информации
+                int Min = reader.GetInt32("Min_Number"); // Переменная с минимальным номером в клубе
+                int Max = reader.GetInt32("Max_Number"); // Переменная с максимальным номером в клубе
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+
+                int Room_int = Convert.ToInt32(Room.Text); // Переменная с номером участника
+                if (Room_int < Min || Room_int > Max) // Номер участника в не диапазоне?
+                { // Да
+                    // Измените номер собаки от * до *, так как данный номер не относится к указанному клубу.
+                    MessageBox.Show($"Измените номер собаки от {Min} до {Max}, так как данный номер не относится к указанному клубу.");
+                    return; // Отмена нажатия
+                } // Нет
+
+                // Команда для базы данных
+                MySqlCommand command = new MySqlCommand("INSERT INTO `Participant` (`Surname`, `Name`, `Second_Name`, `Syria`, `Number`, `Nickname`, `Age`, `Breed`, `Club`, `Nickname_Dad`, `Nickname_Mum`, `Medal`, `Vaccination`, `Room`, `NFtSB`) VALUES (@Sn, @N, @Sd_N, @Sri, @Num, @Nic, @Ag, @Brd, @Cl, @Nic_D, @Nic_M, '', @Vac, @Ro, @NFtSB)", data_Tables.GetConnection());
+                command.Parameters.Add("@Sn", MySqlDbType.VarChar).Value = User_Surname.Text; // Переменная используемая для команды
+                command.Parameters.Add("@N", MySqlDbType.VarChar).Value = User_Name.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Sd_N", MySqlDbType.VarChar).Value = User_Second_Name.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Sri", MySqlDbType.Int32).Value = Seriy_user.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Num", MySqlDbType.Int32).Value = Number_user.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Nic", MySqlDbType.VarChar).Value = Nickname.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Ag", MySqlDbType.Int32).Value = Age.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Brd", MySqlDbType.VarChar).Value = Breed.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Cl", MySqlDbType.VarChar).Value = Club.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Nic_D", MySqlDbType.VarChar).Value = Nickname_Dad.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Nic_M", MySqlDbType.VarChar).Value = Nickname_Mum.Text; // Переменная используемая для команды
+                command.Parameters.Add("@Vac", MySqlDbType.Date).Value = Vaccination.Value.ToString("yyyy-MM-dd"); // Переменная используемая для команды
+                command.Parameters.Add("@Ro", MySqlDbType.Int32).Value = Room.Text; // Переменная используемая для команды
+                command.Parameters.Add("@NFtSB", MySqlDbType.Int32).Value = NFtSB.Text; // Переменная используемая для команды
+
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                if (command.ExecuteNonQuery() == 1) // Команда выполнена?
+                    // Да
+                    MessageBox.Show("Участник добавлен"); // Участник добавлен
+                else // Нет
+                    MessageBox.Show("Участник не добавлен"); // Участник не добавлен
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+
+        public bool Check_Empty(string Text) // Подпрограмма проверки полей
+        {
+            // Список с содержанием всех полей
+            List<string> Say = new List<string>() { "Введите Фамилию участника", "Введите Имя участника", "Введите Отчество участника", "Введите Серию паспорта", "Введите Номер паспорта", "Введите кличку собаки", "Введите возраст собаки", "Введите породу собаки", "Введите название клуба", "Введите кличку отца собаки", "Введите кличку мамы собаки", "Введите номер родословной", "Введите номер собаки" };
+            for (int i = 0; i < Say.LongCount(); i++) // Перебор полей
+                if (Say[i] == Text) // Поле равно его подсказке?
+                { // Да
+                    MessageBox.Show(Say[i]); // Подсказка поля
+                    return false; // Возврат отрицания
+                } // Нет
+            return true; // Возврат положительный
+        }
+
+        private void All_Line_KeyPress(object sender, KeyPressEventArgs e) // Запрет на цифры
+        {
+            string Symbol = e.KeyChar.ToString(); // Присваевает пременныую string нажатой клавишы
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (!Regex.Match(Symbol, @"[а-яА-Я]|[a-zA-Z]").Success && number != 8 && number != 32) // Цифра?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+        }
+        private void All_Int_Line_KeyPress(object sender, KeyPressEventArgs e) // Разрешается писать только цифры
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (!Char.IsDigit(number) && number != 8) // Это буква?
+            { // Да
+                e.Handled = true; // Заблокировать ввод
+            } // Нет
+        }
+
+        private void Seriy_user_KeyPress(object sender, KeyPressEventArgs e) // Запрет на буквы и ограничение до 4 символов
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (Seriy_user.Text.Length > 3 && number != 8) // Символа 4?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+            if (!Char.IsDigit(number) && number != 8) // Буква?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+        }
+
+        private void Number_user_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (Number_user.Text.Length > 5 && number != 8) // Символа 6?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+            if (!Char.IsDigit(number) && number != 8) // Буква?
+                // Да
+                e.Handled = true; // Заблокировать ввод
+            // Нет
+        }
+
+        private void Vaccination_BindingContextChanged(object sender, EventArgs e) // Ограничение поля Даты последней прививки
+        {
+            Vaccination.MaxDate = DateTime.Now; // Ограничение нынешней датой и позже
+        }
+
+        private void Out_dog_Click(object sender, EventArgs e) // Нажать на кнопку отстранения
+        {
+            if (!Check_Empty(Room_Out.Text)) // Проверка не пройдена?
+                // Да
+                return; // Отмена нажатия
+            // Нет
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+
+            DataTable table = new DataTable(); // Создает таблицу для данных в памяти
+
+            MySqlDataAdapter adapter = new MySqlDataAdapter(); //  Представляет ряд команд данных и соединения с базой данных
+            // Команда для базы данных
+            MySqlCommand cmd = new MySqlCommand("SELECT * FROM `Participant` WHERE `Room` = @Rm", data_Tables.GetConnection());
+
+            cmd.Parameters.Add("@Rm", MySqlDbType.Int32).Value = Room_Out.Text; // Переменная используемая для команды
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                adapter.SelectCommand = cmd; // Выполняет команду
+                adapter.Fill(table); // Заполняет таблицу данными полученными из команды
+
+                if (table.Rows.Count == 0) // В базе данных нет таких данных?
+                { // Да
+                    MessageBox.Show("С таким номером нет собаки"); // С таким номером нет собаки
+                    return; // Отмена нажатия
+                } // Нет
+                  // Команда для базы данных
+                cmd = new MySqlCommand("DELETE FROM `Participant` WHERE `Room` = @Rm", data_Tables.GetConnection());
+
+                cmd.Parameters.Add("@Rm", MySqlDbType.Int32).Value = Room_Out.Text; // Переменная используемая для команды
+
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                if (cmd.ExecuteNonQuery() == 1) // Команда выполнена?
+                                                // Да
+                    MessageBox.Show("Собака отстранена"); // Собака отстранена
+                else // Нет
+                    MessageBox.Show("Собака с таким номером не найдена"); // Собака с таким номером не найдена
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+
+        }
+
+        private void Back_Click(object sender, EventArgs e) // Переход в меню
+        {
+            this.Hide(); // Спрятать окно
+            Menu next = new Menu(); // Создать окно меню
+            next.Show(); // Переход в окно меню
+        }
+
+        private void Add_dog_user_delete_dog_FormClosed(object sender, FormClosedEventArgs e) // При закрытии окна, закрывать приложение
+        {
+            Application.Exit(); // Закрыть приложение
+        }
+
+        private void Add_dog_user_delete_dog_Load(object sender, EventArgs e) // Загрузка данных в поля Порода и Клуб
+        {
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Ring` ", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+
+                while (reader.Read()) // Чтение полученной информации
+                    Breed.Items.Add(reader.GetString("Breed")); // Запись в поле "Порода" породу собаки
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+
+                // Команда для базы данных
+                command = new MySqlCommand("SELECT * FROM `Club` ", data_Tables.GetConnection());
+
+                data_Tables.OpenConnection();// Открыть соединение с БД
+
+                reader = command.ExecuteReader();  // Прочитать из БД информации из команды
+
+                while (reader.Read()) // Чтение полученной информации
+                    Club.Items.Add(reader.GetString("Club")); // Запись в поле "Клуб" название клуба
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+
+        private void Non_KeyPress(object sender, KeyPressEventArgs e) // Запрет на ввод всего
+        {
+            e.Handled = true; // Запрет ввода
+        }
+    }
+}
