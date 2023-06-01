@@ -1,0 +1,104 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class How_Breed_Club : Form // Окно Узнать породы клуба
+    {
+        public How_Breed_Club()
+        {
+            InitializeComponent(); // Запуск окна
+        }
+
+        private void Back_Click(object sender, EventArgs e) // Переход в меню
+        {
+            this.Hide(); // Спрятать окно
+            Menu next = new Menu(); // Создать окно меню
+            next.Show(); // Переход в окно меню
+        }
+
+        private void How_Breed_Club_FormClosed(object sender, FormClosedEventArgs e) // При закрытии окна, закрывать приложение
+        {
+            Application.Exit(); // Закрыть приложения
+        }
+
+        private void Club_KeyPress(object sender, KeyPressEventArgs e) // Запретить ввода всего
+        {
+            e.Handled = true; // Запрет ввода
+        }
+
+        private void How_Breed_Club_Load(object sender, EventArgs e) // Загрузка таблиц и данных в поля 
+        {
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Club` ", data_Tables.GetConnection());
+            try  // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+
+                while (reader.Read()) // Чтение полученной информации
+                    Club.Items.Add(reader.GetString("Club")); // Запись в поле "Клуб" названия клуба
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+            var column1 = new DataGridViewColumn(); // Создать колонку
+            column1.HeaderText = "Породы";  // Заголовок колонки
+            column1.Width = 200; // Ширина колонки
+            column1.Name = "Порода"; // Имя колонки
+            column1.Frozen = true; // Нельзя двигать колонку
+            column1.CellTemplate = new DataGridViewTextBoxCell(); // Шаблон DataGridViewTextBoxCell
+            Club_Breed.Columns.Add(column1); // Добавить колонку в Club_Breed
+            Club_Breed.AllowUserToAddRows = false; // Нельзя добавлять строки
+            Club_Breed.ReadOnly = true; // Только чтение
+        }
+
+        private void Know_breed_club_Click(object sender, EventArgs e) // Нажатие кнопки
+        {
+            if (Club.Text == "") // Поле Клуба пусто?
+            { // Да
+                MessageBox.Show("Выберите клуб"); // Выберите клуб
+                return; // Отмена нажатия
+            } // Нет
+            Club_Breed.Rows.Clear(); // Очистить мтроки в таблице
+
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Participant` ", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                List<String> Breed = new List<String>(); // Список со всеми породами клуба
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+                bool Check; // Проверка
+                while (reader.Read()) // Чтение полученной информации
+                {
+                    Check = false; // Проверка непройдена
+                    for (int i = 0; i < Club_Breed.Rows.Count; i++) // Проверка одинаковых пород
+                        if (Convert.ToString(Breed[i]) == reader.GetString("Breed")) // "Порода" равна порода из БД
+                            Check = true; // Проверка пройдена
+                    if (Check) // Проверка пройдена?
+                               // Да
+                        continue;// Дальше
+                                 // Нет
+                    if (Club.Text == reader.GetString("Club")) // "Клуб" равен Клубу из Бд
+                    { // Да
+                        Club_Breed.Rows.Add(reader.GetString("Breed")); // Добавить в таблицу породу
+                        Breed.Add(reader.GetString("Breed")); // Добавление породы в список с породами клуба
+                    } // Нет
+                }
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+    }
+}
