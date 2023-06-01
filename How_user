@@ -1,0 +1,100 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class How_user : Form // Окно Узнать кол-во участников по породе
+    {
+        public How_user()
+        {
+            InitializeComponent(); // Запуск окна
+        }
+
+        private void How_user_FormClosed(object sender, FormClosedEventArgs e) // При закрытии окна, закрывать приложение
+        {
+            Application.Exit(); // Закрыть приложение
+        }
+
+        private void Back_Click(object sender, EventArgs e) // Переход в меню
+        {
+            this.Hide(); // Спрятать окно
+            Menu next = new Menu(); // Создать окно меню
+            next.Show(); // Переход в окно меню
+        }
+
+        private void How_user_Load(object sender, EventArgs e) // Загрузка данных для поля Породы и загрузка таблицы
+        {
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Ring` ", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+
+                while (reader.Read()) // Чтение полученной информации
+                    Breed.Items.Add(reader.GetString("Breed")); // Запись в поле "Порода" породу собаки
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+            var column1 = new DataGridViewColumn(); // Создать колонку
+            column1.HeaderText = "Порода"; // Заголовок Порода
+            column1.Width = 150; // Ширина колонки
+            column1.Name = "Порода"; // Имя колонки
+            column1.Frozen = true; // Нельзя двигать колонку
+            column1.CellTemplate = new DataGridViewTextBoxCell(); // Шаблон DataGridViewTextBoxCell
+
+            var column2 = new DataGridViewColumn(); // Создать колонку
+            column2.HeaderText = "Количество участников"; // Заголовок Количество участников
+            column2.Width = 100;  // Ширина колонки
+            column2.Name = "Количество участников";  // Имя колонки
+            column2.Frozen = true; // Нельзя двигать колонку
+            column2.CellTemplate = new DataGridViewTextBoxCell(); // Шаблон DataGridViewTextBoxCell
+
+            Lenght_Breed.Columns.Add(column1); // Добавить колонку в Lenght_Breed
+            Lenght_Breed.Columns.Add(column2); // Добавить колонку в Lenght_Breed
+            Lenght_Breed.AllowUserToAddRows = false; // Нельзя добавлять строки
+            Lenght_Breed.ReadOnly = true; // Только чтение
+        }
+
+        private void Breed_KeyPress(object sender, KeyPressEventArgs e) // Запрет на ввод всего
+        {
+            e.Handled = true; // Запрет ввода
+        }
+
+        private void Know_lenght_breed_Click(object sender, EventArgs e) // Нажать на кнопку
+        {
+            if (Breed.Text == "") // Поле Порода пуста?
+            { // Да
+                MessageBox.Show("Выберите пароду"); // Выберите пароду
+                return; // Отмена нажатия
+            } // Нет
+            Lenght_Breed.Rows.Clear(); // Очистить строки
+            int breed = 0; // Количество участников одной породы
+
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Participant`", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+                while (reader.Read()) // Чтение полученной информации
+                    if (reader.GetString("Breed") == Breed.Text) // Порода из БД равна "Порода"
+                        breed++; // Подсчет участников с указанной породой
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+            Lenght_Breed.Rows.Add(Breed.Text, breed); // Добавление в таблицу количество участников с указанной породой
+        }
+    }
+}
