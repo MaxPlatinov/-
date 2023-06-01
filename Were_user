@@ -1,0 +1,104 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class Were_user : Form // Окно узнать, где участник
+    {
+        public Were_user()
+        {
+            InitializeComponent(); // Запуск окна
+        }
+
+        private void Were_user_FormClosed(object sender, FormClosedEventArgs e) // При закрытии окна, закрывать приложение
+        {
+            Application.Exit(); // Закрыть приложения
+        }
+
+        private void Back_Click(object sender, EventArgs e) // Переход в меню
+        {
+            this.Hide(); // Спрятать окно
+            Menu next = new Menu(); // Создать окно меню
+            next.Show(); // Переход в окно меню
+        }
+
+        private void Were_user_Load(object sender, EventArgs e) // Загрузка данных для поля номер участника
+        {
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Participant`", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+
+                while (reader.Read()) // Чтение полученной информации
+                    Room.Items.Add(reader.GetString("Room")); // Запись в поле "Номер участника" номер участника
+
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+
+        private void All_Int_Line_KeyPress(object sender, KeyPressEventArgs e) // Разрешается писать только цифры
+        {
+            char number = e.KeyChar; // Присваевает пременныую char нажатой клавишы
+            if (!Char.IsDigit(number) && number != 8) // Это буква?
+            { // Да
+                e.Handled = true; // Заблокировать ввод
+            } // Нет
+        }
+
+        private void Find_Click(object sender, EventArgs e) // Нажать на кнопку
+        {
+            if (Room.Text == "") // Поле заполнено?
+            { // Да
+                MessageBox.Show("Введите номер участника"); // Введите номер участника
+                return; // Отменить нажатие
+            } // Нет
+            Data_Tables data_Tables = new Data_Tables(); // Создает путь к базе данных
+            string Breed; // Переменная содержащая породы
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Participant` WHERE `Room` = @Rm", data_Tables.GetConnection());
+            command.Parameters.Add("@Rm", MySqlDbType.Int32).Value = Room.Text; // Переменная используемая для команды
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+                try // Ловит ошибку с отсутвием участника в БД
+                {
+                    reader.Read(); // Прочитать информацию
+                    Breed = reader.GetString("Breed"); // Добавить информацию о породе в поле "Порода"
+                }
+                catch  // Поймал ошибку отсутвия участника в БД
+                {
+                    data_Tables.CloseConnection(); // Закрыть соединение с БД
+                    MessageBox.Show("Данного участника не существеует"); // Данного участника не существеует
+                    return; // Отменить нажатие 
+                }
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+                                               // Команда для базы данных
+                command = new MySqlCommand("SELECT * FROM `Ring` WHERE `Breed` = @Bd", data_Tables.GetConnection());
+
+                command.Parameters.Add("@Bd", MySqlDbType.VarChar).Value = Breed; // Переменные используемые для команды
+
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+
+                reader = command.ExecuteReader();  // Прочитать из БД информации из команды
+
+                reader.Read(); // Прочитать информацию
+                MessageBox.Show($"Участник под номером {Room.Text} находится на ринге {reader.GetString("Ring")}"); // Участник под номером * находится на ринге *
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+    }
+}
