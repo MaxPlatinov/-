@@ -1,0 +1,20 @@
+using System;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    internal static class Program
+    {
+        /// <summary>
+        /// Главная точка входа для приложения.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles(); // Включение визуальных стилей для приложения.
+            Application.SetCompatibleTextRenderingDefault(false); // Задает значение по умолчанию для всего приложения для свойства
+            Application.Run(new Dog_Show()); // Запускает приложение
+            //Application.Run(new Menu());
+        }
+    }
+}
