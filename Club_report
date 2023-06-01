@@ -1,0 +1,76 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace Сoursework
+{
+    public partial class Club_report : Form // Окно Отчет о клубе
+    {
+        public String Clab;
+        public Club_report(String Data)
+        {
+            InitializeComponent(); // Запуск окна
+            Clab = Data; // Присвоение переменной названия клуба
+        }
+
+        private void Club_report_Load(object sender, EventArgs e) // Загрузка отчета о клубе
+        {
+            Club.Text += Clab; // Добавление названия клуба тексту о клубе
+
+            Data_Tables data_Tables = new Data_Tables();  // Создает путь к базе данных
+            int Number = 0, heard; // Переменные количесвтво членов клуба и переключатель
+
+            List<String> Breed = new List<String>(); // Список со всеми породами собак
+            // Команда для базы данных
+            MySqlCommand command = new MySqlCommand("SELECT * FROM `Ring`", data_Tables.GetConnection());
+            try // Ловит ошибку с отсутвием подключением к базе данных
+            {
+                data_Tables.OpenConnection(); // Открыть соединение с БД
+                MySqlDataReader reader = command.ExecuteReader(); // Прочитать из БД информации из команды
+                while (reader.Read()) // Чтение полученной информации
+                    Breed.Add(reader.GetString("Breed")); // Добавить информацию о породе в поле "Порода"
+                data_Tables.CloseConnection(); // Закрыть соединение с БД
+                for (int i = 0; i < Breed.LongCount(); i++) // Перебор всех пород
+                {
+                    heard = 2; // Переключатель на таблице Breed_Club
+                               // Команда для базы данных
+                    command = new MySqlCommand("SELECT * FROM `Participant` WHERE  `Club` = @Cb AND `Breed` = @Bd", data_Tables.GetConnection());
+                    command.Parameters.Add("@Cb", MySqlDbType.VarChar).Value = Clab;  // Переменная используемая для команды
+                    command.Parameters.Add("@Bd", MySqlDbType.VarChar).Value = Breed[i];  // Переменная используемая для команды
+                    data_Tables.OpenConnection();  // Открыть соединение с БД
+                    reader = command.ExecuteReader();  // Прочитать из БД информации из команды
+
+                    while (reader.Read())  // Чтение полученной информации
+                    {
+                        Number++; // Прибавляется количество членов клуба
+
+                        if (heard == 2) // Преключатель 2?
+                        { // Да
+                            Breed_Club.Items.Add(Breed[i]); // Добавить породы в таблицу Breed_Club
+                            heard = 1; // Перключатель на таблице Club_list
+                        } // Нет
+                        if (heard == 1 && reader.GetString("Medal") != "") // Переключатель 1 и есть медаль?
+                        { // Да
+                            Club_list.Items.Add(new ListViewItem(new string[] { Breed[i], "", "", "" })); // Добавить Породу в таблицу Club_list
+                            heard = 0; // Переключатель выключен
+                        } // Нет
+
+                        if (reader.GetString("Medal") != "") // Есть медаль?
+                                                             // Да
+                                                             // Добавить номер, медаль, кличку собаки в таблицу Club_list
+                            Club_list.Items.Add(new ListViewItem(new string[] { "", reader.GetString("Room"), reader.GetString("Medal"), reader.GetString("Nickname") }));
+                        // Нет
+                    }
+                    data_Tables.CloseConnection();  // Закрыть соединение с БД
+                }
+                Number_N.Text += Convert.ToString(Number); // Добавление количества членов клуба к тексту о членах клуба
+            }
+            catch // Поймал ошибку подключения к БД
+            {
+                MessageBox.Show("Отсутствует подключение к базе данных"); // Отсутствует подключение к базе данных
+            }
+        }
+    }
+}
